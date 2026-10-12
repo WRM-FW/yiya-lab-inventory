@@ -436,8 +436,36 @@ class Store {
         }
     }
 
-    async register(email, password, fullName, studentId = '') {
+    // 向服务器重新核实当前登录者的档案状态
+    // 云端模式下管理员批准后，浏览器里缓存的还是旧的 pending 状态，
+    // 必须真查一次库才能发现状态已经变了（RLS 允许本人读自己这一行）
+    async refreshCurrentUser() {
         if (this.mode === 'sandbox') {
+            const data = this.getSandboxData();
+            const fresh = data.users.find(u => u.id === this.currentUser?.id);
+            if (fresh) {
+                this.currentUser = fresh;
+                localStorage.setItem('yiya_current_user', JSON.stringify(fresh));
+            }
+            this.notify();
+            return this.currentUser;
+        }
+
+        if (!this.currentUser?.id) return this.currentUser;
+        const profiles = await supabase.from('users_profile').select('*', { id: this.currentUser.id });
+        const fresh = profiles && profiles[0];
+        if (fresh) {
+            this.currentUser = { ...this.currentUser, ...fresh };
+            localStorage.setItem('yiya_current_user', JSON.stringify(this.currentUser));
+        } else {
+            // 档案已不存在（账号被删）：清掉本地登录态，回到登录页
+            this.logout();
+        }
+        this.notify();
+        return this.currentUser;
+    }
+
+    async register(email, password, fullName, studentId = '') {        if (this.mode === 'sandbox') {
             const data = this.getSandboxData();
             if (data.users.some(u => u.email.toLowerCase() === email.toLowerCase().trim())) {
                 throw new Error('该邮箱已存在注册申请，不可重复注册');

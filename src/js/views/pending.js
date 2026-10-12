@@ -61,13 +61,28 @@ export function renderPendingView(container) {
         window.location.hash = '#login';
     };
 
-    document.getElementById('btn-refresh-status').onclick = () => {
-        store.init();
-        if (store.currentUser?.status === 'approved') {
-            toast.success('审核已通过！正在进入控制台...');
-            window.location.hash = '#overview';
-        } else {
-            toast.info('当前状态仍为待审核，请稍后刷新或联系管理员');
+    document.getElementById('btn-refresh-status').onclick = async (e) => {
+        const btn = e.currentTarget;
+        btn.disabled = true;
+        btn.textContent = '正在核实...';
+        try {
+            // 云端必须回服务器查一次，只读本地缓存会永远停在“待审核”
+            const me = await store.refreshCurrentUser();
+            if (me?.status === 'approved') {
+                toast.success('审核已通过！正在进入控制台...');
+                window.location.hash = '#overview';
+            } else if (me?.status === 'rejected') {
+                toast.error('很遗憾，本次注册申请被驳回，请联系实验室管理员');
+            } else if (me?.status === 'disabled') {
+                toast.error('该账号已被禁用，请联系实验室管理员');
+            } else {
+                toast.info('当前状态仍为待审核，请稍后刷新或联系管理员');
+            }
+        } catch (err) {
+            toast.error(err.message || '状态核实失败，请稍后重试');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '刷新状态';
         }
     };
 
