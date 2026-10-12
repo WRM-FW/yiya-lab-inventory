@@ -495,44 +495,46 @@ class Store {
     }
 
     // 数据读取接口 (聚合)
+    // 云端读取统一显式声明排序，与沙箱模式的数组顺序保持一致：
+    // 字典与物资按录入先后，流水与借还单按时间倒序（最新在前）
     async getLocations() {
         if (this.mode === 'sandbox') return this.getSandboxData().locations;
-        return await supabase.from('storage_locations').select('*');
+        return await supabase.from('storage_locations').select('*', {}, { order: { createdAt: 'asc' } });
     }
 
     async getCategories() {
         if (this.mode === 'sandbox') return this.getSandboxData().categories;
-        return await supabase.from('categories').select('*');
+        return await supabase.from('categories').select('*', {}, { order: { createdAt: 'asc' } });
     }
 
     async getMaterials3D() {
         if (this.mode === 'sandbox') return this.getSandboxData().materials3d;
-        return await supabase.from('materials_3d').select('*');
+        return await supabase.from('materials_3d').select('*', {}, { order: { createdAt: 'asc', id: 'asc' } });
     }
 
     async getConsumables() {
         if (this.mode === 'sandbox') return this.getSandboxData().consumables;
-        return await supabase.from('general_consumables').select('*');
+        return await supabase.from('general_consumables').select('*', {}, { order: { createdAt: 'asc', id: 'asc' } });
     }
 
     async getTools() {
         if (this.mode === 'sandbox') return this.getSandboxData().tools;
-        return await supabase.from('reusable_tools').select('*');
+        return await supabase.from('reusable_tools').select('*', {}, { order: { createdAt: 'asc', id: 'asc' } });
     }
 
     async getLoans() {
         if (this.mode === 'sandbox') return this.getSandboxData().loans;
-        return await supabase.from('tool_loans').select('*');
+        return await supabase.from('tool_loans').select('*', {}, { order: { borrowedAt: 'desc' } });
     }
 
     async getLogs() {
         if (this.mode === 'sandbox') return this.getSandboxData().logs;
-        return await supabase.from('inventory_logs').select('*');
+        return await supabase.from('inventory_logs').select('*', {}, { order: { createdAt: 'desc' } });
     }
 
     async getUsers() {
         if (this.mode === 'sandbox') return this.getSandboxData().users;
-        return await supabase.from('users_profile').select('*');
+        return await supabase.from('users_profile').select('*', {}, { order: { createdAt: 'asc' } });
     }
 
     // 业务写操作：3D耗材变更 (入库/消耗/报损/盘点)
