@@ -623,11 +623,42 @@ GRANT EXECUTE ON FUNCTION public.fn_is_approved_member() TO anon, authenticated;
 
 
 -- ------------------------------------------------------------------------------
--- 10. 执行后自检（可选，逐条单独运行查看结果）
+-- 10. 表级授权显式化：使部署结果与建项目时“自动暴露新表”开关的取值无关
+--     建项目时若关闭该开关，public 模式下新建的表不会自动获得 Data API 权限，
+--     前端 REST 查询会直接 permission denied；若开启，anon 角色也会被默认授予权限。
+--     这里统一改为手动精确授权：anon 一律收回（未登录者对业务表零访问），
+--     authenticated 拿到表级增删改查，但每一行仍受 03 迁移的 RLS 策略约束，
+--     未审核 (pending) 账号在任何表上都查不到、改不了数据。
+-- ------------------------------------------------------------------------------
+GRANT USAGE ON SCHEMA public TO authenticated;
+
+REVOKE ALL ON TABLE public.users_profile         FROM anon;
+REVOKE ALL ON TABLE public.storage_locations     FROM anon;
+REVOKE ALL ON TABLE public.categories            FROM anon;
+REVOKE ALL ON TABLE public.materials_3d          FROM anon;
+REVOKE ALL ON TABLE public.general_consumables   FROM anon;
+REVOKE ALL ON TABLE public.reusable_tools        FROM anon;
+REVOKE ALL ON TABLE public.inventory_logs        FROM anon;
+REVOKE ALL ON TABLE public.tool_loans            FROM anon;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.users_profile       TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.storage_locations   TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.categories          TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.materials_3d        TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.general_consumables TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.reusable_tools      TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.inventory_logs      TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tool_loans          TO authenticated;
+
+
+-- ------------------------------------------------------------------------------
+-- 11. 执行后自检（可选，逐条单独运行查看结果）
 --   SELECT count(*) FROM auth.users u
 --     LEFT JOIN public.users_profile p ON p.id = u.id WHERE p.id IS NULL;
 --   -- 期望 0：所有注册用户都已有档案行
 --   SELECT proname, prosecdef FROM pg_proc
 --     WHERE pronamespace = 'public' AND proname LIKE 'fn_%';
 --   -- 期望 5 个业务 RPC + 2 个策略辅助 + 2 个新增辅助均为 t (SECURITY DEFINER)
+--   SELECT has_table_privilege('anon', 'public.materials_3d', 'SELECT') AS anon_leaked;
+--   -- 期望 false
 -- ------------------------------------------------------------------------------
