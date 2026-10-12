@@ -11,6 +11,6 @@
 // ==============================================================================
 
 export const SUPABASE_DEFAULTS = {
-    url: '',
-    anonKey: ''
+    url: 'https://qbeqynsibnsvvgwyhfyy.supabase.co',
+    anonKey: 'sb_publishable_kvkloLZoYHTlltKQLVFUpw_7yXY4c74'
 };

@@ -58,7 +58,8 @@
 │   │   └── style.css               # 实验室专属设计系统样式表 (响应式、移动端友好)
 │   ├── js/
 │   │   ├── app.js                  # 路由调度与安全守卫
-│   │   ├── config.js               # 运行环境与 Supabase 连接配置
+│   │   ├── config.js               # 运行模式与连接配置读取（网址参数 > 本地覆盖 > 仓库默认）
+│   │   ├── config.defaults.js      # 随仓库提交的 Supabase 默认连接（仅 URL 与可公开的 anon key）
 │   │   ├── store.js                # 响应式状态管理与双模式数据适配器
 │   │   ├── supabaseClient.js       # 原生 Fetch 版轻量 Supabase REST/Auth 客户端
 │   │   ├── utils/
@@ -82,7 +83,8 @@
 │   ├── migrations/
 │   │   ├── 20261012000001_init_schema.sql         # 表结构、外键与检查约束
 │   │   ├── 20261012000002_inventory_rpc_functions.sql # 原子操作 RPC 存储过程
-│   │   └── 20261012000003_rls_policies.sql       # 细粒度行级安全策略 (RLS)
+│   │   ├── 20261012000003_rls_policies.sql       # 细粒度行级安全策略 (RLS)
+│   │   └── 20261012000004_auth_profile_sync_and_rpc_hardening.sql # 注册自动建档 + RPC 身份绑定 auth.uid()
 │   ├── seed.sql                                  # 初始基础字典与示范物资数据
 │   └── init_admin.sql                            # 首个管理员安全初始化脚本
 ├── tests/                          # 自动化测试套件
@@ -103,14 +105,19 @@
 
 ## 🚀 快速上手与运行体验
 
-### 1. 本地免配沙箱体验（开箱即用，无需配置云端）
+### 0. 线上直接使用（实验室日常入口）
+`https://wrm-fw.github.io/yiya-lab-inventory/`
+- 打开即为 **Supabase 云端模式**：连接配置已随仓库下发，成员注册 → 管理员审核 → 即可使用真实台账。
+- 新注册账号一律落在 `pending` 状态，审核通过前查不到任何物资数据。
+
+### 1. 本地免配沙箱体验（离线演示，无需配置云端）
 在任意本地静态服务器中打开本目录即可体验：
 ```bash
 # 启动本地开发服务 (支持 python 或任意静态服务器)
 python3 -m http.server 8000
-# 浏览器访问 http://localhost:8000
+# 浏览器访问 http://localhost:8000?mode=sandbox
 ```
-- 系统默认以“本地沙箱模式”启动，内置了完整的 3D 耗材、通用耗材与工具借还数据。
+- 云端配置下发后，本地或线上均可用网址参数 `?mode=sandbox` 强制进入沙箱模式，内置完整的 3D 耗材、通用耗材与工具借还数据，操作不影响真实台账。
 - 导航栏右上角支持**一键切换测试角色**（管理员、普通成员、待审核用户），便于快速演示不同权限视角。
 
 ### 2. 执行自动化测试套件
@@ -120,8 +127,8 @@ node tests/run_all_tests.js
 ```
 执行全部 30 个自动化单元与集成测试用例，覆盖重量换算、防负库存、工具守恒及防自我提权攻击。
 
-### 3. 上线至 GitHub Pages 与 Supabase 云端
-请参考详细文档：[《GitHub Pages 部署与 Supabase 运维指南》](docs/03_deployment_and_ops_guide.md)。
+### 3. 部署、迁移与运维
+仓库、Pages、Supabase 项目的实际参数，4 个迁移的执行顺序与两种执行通道，迁移后验收清单，以及备份恢复与免费套餐防坑说明，见：[《GitHub Pages 部署与 Supabase 运维指南》](docs/03_deployment_and_ops_guide.md)。
 
 ---
 

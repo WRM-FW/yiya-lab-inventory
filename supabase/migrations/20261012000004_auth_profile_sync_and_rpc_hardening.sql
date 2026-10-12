@@ -367,8 +367,8 @@ CREATE OR REPLACE FUNCTION public.fn_borrow_tool(
     p_borrow_quantity INTEGER,
     p_borrower_id UUID DEFAULT NULL,       -- 已废弃：仅作旧客户端兼容占位
     p_borrower_name TEXT DEFAULT '',
-    p_contact_info TEXT,
-    p_expected_return_at TIMESTAMPTZ,
+    p_contact_info TEXT DEFAULT NULL,
+    p_expected_return_at TIMESTAMPTZ DEFAULT NULL,
     p_notes TEXT DEFAULT ''
 ) RETURNS JSONB AS $$
 DECLARE
