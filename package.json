@@ -1,0 +1,9 @@
+{
+  "name": "yiya-lab-inventory",
+  "version": "1.0.0",
+  "description": "义牙实验室物资与耗材管理系统 (高校工程实践与材料创新研究中心)",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run_all_tests.js"
+  }
+}

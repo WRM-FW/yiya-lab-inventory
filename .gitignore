@@ -1,0 +1,28 @@
+# 依赖与构建产物（本项目零构建，正常不应出现）
+node_modules/
+dist/
+build/
+
+# 本地环境变量与密钥（Supabase service_role / DB 密码等严禁提交）
+.env
+.env.*
+*.local
+supabase/.branches/
+supabase/.temp/
+
+# 数据库备份导出件
+*.sql.gz
+backups/
+
+# 操作系统与编辑器杂项
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+tmp/

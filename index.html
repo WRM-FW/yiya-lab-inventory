@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>义牙实验室物资与耗材管理系统</title>
+    <meta name="description" content="适用于高校工程实践实验室的物资与耗材管理 Web 应用，服务于义牙实验室的日常材料研究、3D 打印、焊接加工与工程竞赛。">
+    <!-- 引入设计系统样式 -->
+    <link rel="stylesheet" href="./src/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧵</text></svg>">
+</head>
+<body>
+    <!-- 顶部导航栏挂载节点 -->
+    <header id="navbar-root" class="navbar"></header>
+
+    <!-- 主体业务页面挂载容器 -->
+    <main id="app-root" class="main-content"></main>
+
+    <!-- 页脚说明 -->
+    <footer class="footer">
+        <div style="max-width: 1300px; margin: 0 auto; padding: 0 1.25rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;">
+            <div>
+                © 2026 <b>义牙实验室</b> · 高校工程实践与材料创新研究中心
+            </div>
+            <div style="color: var(--neutral-400);">
+                服务范畴：材料研究 · 3D 打印加工 · 电子焊接 · 学生工程竞赛
+            </div>
+        </div>
+    </footer>
+
+    <!-- 全局弹窗与提示挂载根节点 -->
+    <div id="modal-root"></div>
+    <div id="toast-root" class="toast-container"></div>
+
+    <!-- 应用程序入口 -->
+    <script type="module" src="./src/js/app.js"></script>
+</body>
+</html>
