@@ -188,9 +188,15 @@ function attachNavbarEvents() {
                             <option value="sandbox" ${currentMode === 'sandbox' ? 'selected' : ''}>本地免配沙箱模式 (内置示例数据，即刻体验)</option>
                             <option value="supabase" ${currentMode === 'supabase' ? 'selected' : ''}>Supabase 云端数据库模式 (生产联调)</option>
                         </select>
-                        <div class="form-help">本地沙箱可在无网络或演示时使用完整的出入库、借还与审核逻辑。</div>
+                        <div class="form-help">本地沙箱可在无网络或演示时使用完整的出入库、借还与审核逻辑。临时演示可在网址后加 <code>?mode=sandbox</code>。</div>
                     </div>
                     <div id="cfg-supabase-fields" style="${currentMode === 'supabase' ? 'display: block;' : 'display: none;'}">
+                        ${APP_CONFIG.hasRepoSupabaseConfig() ? `
+                        <div class="form-help" style="margin-bottom: 0.75rem;">
+                            ${sbConfig.from === 'local'
+                                ? '当前生效的是<b>本机手动填写</b>的连接配置。'
+                                : '当前生效的是<b>随仓库提交</b>的默认连接配置，留空即沿用。'}
+                        </div>` : ''}
                         <div class="form-group">
                             <label class="form-label">Supabase Project URL</label>
                             <input class="form-input" id="cfg-url" placeholder="https://xyzcompany.supabase.co" value="${sbConfig.url}" />
@@ -198,7 +204,7 @@ function attachNavbarEvents() {
                         <div class="form-group">
                             <label class="form-label">Supabase Anon Public Key</label>
                             <input class="form-input" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." value="${sbConfig.anonKey}" />
-                            <div class="form-help">请使用 Project Settings -> API 中的 anon public 密钥，严禁填入 service_role 密钥。</div>
+                            <div class="form-help">请使用 Project Settings -> API 中的 anon public 密钥，严禁填入 service_role 密钥。两栏均留空时自动回到仓库默认配置。</div>
                         </div>
                     </div>
                 `,
